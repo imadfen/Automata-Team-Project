@@ -1,22 +1,39 @@
 {
   "name": "automata_team_project_server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start:dev": "tsx src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "@types/express": "^5.0.1",
-    "@types/node": "^22.14.0",
-    "express": "^5.1.0",
+    "@types/node": "^22.13.14",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "eslint": "^9.23.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
     "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.28.0"
   }
 }
