@@ -68,22 +68,15 @@ export class SocketService implements ISocketService {
     this.socket.on(
       "robot:navigate",
       async (data: { robotId: string; slotId: string }, callback: Function) => {
-        if (!this.navigationService) {
-          callback({
-            success: false,
-            error: "Navigation service not initialized",
-          });
-          return;
-        }
         try {
-          const result = await this.navigationService.handleNavigationRequest(
+          const result = await this.navigationService?.handleNavigationRequest(
             data.robotId,
             data.slotId
           );
           callback({
             success: true,
-            path: result.directions,
-            instructions: result.instructions,
+            path: result?.directions,
+            instructions: result?.instructions,
           });
         } catch (error: any) {
           callback({ success: false, error: error.message });

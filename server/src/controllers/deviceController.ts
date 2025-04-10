@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { io } from "../index.js";
 import {
   createDevice,
   getAllDevices,
@@ -172,5 +173,37 @@ export const reportEventController = async (req: Request, res: Response) => {
     res.json(device);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+export const navigateDeviceController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { slotId } = req.body;
+
+    if (!slotId) {
+      return res.status(400).json({ error: "slotId is required" });
+    }
+
+    const device = await getDeviceById(id);
+    if (!device) {
+      return res.status(404).json({ error: "Device not found" });
+    }
+    console.log(`Navigating device ${id} to slot ${slotId}`);
+
+    // Use io to emit navigation request to MQTT server
+    const response = await new Promise((resolve) => {
+      io.emitToMqttServer(
+        "robot:navigate",
+        { robotId: id, slotId },
+        (response: any) => {
+          resolve(response);
+        },
+      );
+    });
+
+    res.json(response);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };

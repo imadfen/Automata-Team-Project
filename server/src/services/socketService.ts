@@ -35,6 +35,15 @@ export class SocketService {
     }
   }
 
+  public emitToMqttServer(event: string, data: any, callback?: Function): void {
+    if (this.mqttServer) {
+      this.mqttServer.emit(event, data, callback);
+    } else {
+      console.error("MQTT Server is not connected");
+      callback?.({ success: false, error: "MQTT Server is not connected" });
+    }
+  }
+
   private setupSocketHandlers(): void {
     this.io.on("connection", async (socket: Socket) => {
       socket.on("register:mqtt_server", async () => {

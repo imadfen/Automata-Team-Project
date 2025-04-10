@@ -12,6 +12,7 @@ import {
   updateDeviceRfidTagController,
   logCheckpointController,
   reportEventController,
+  navigateDeviceController,
 } from "../controllers/deviceController.js";
 
 const router = express.Router();
@@ -26,6 +27,9 @@ router.put("/:id", updateDeviceController as RequestHandler);
 router.delete("/:id", deleteDeviceController as RequestHandler);
 router.patch("/:id/status", updateDeviceStatusController as RequestHandler);
 router.patch("/:id/rfid", updateDeviceRfidTagController as RequestHandler);
+
+// Navigation route
+router.post("/:id/navigate", navigateDeviceController as RequestHandler);
 
 // New routes for MQTT server integration
 router.post(
