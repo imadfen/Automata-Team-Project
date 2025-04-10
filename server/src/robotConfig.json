@@ -1,0 +1,17 @@
+{
+    "ForwardTime": 1,
+    "TurnTime": 2,
+    "GridSize": 120,
+    "GridCellSize": 10,
+    "ShelfDimensions": {
+      "width": 15,
+      "depth": 30,
+      "height": 180
+    },
+    "RobotDimensions": {
+      "width": 30,
+      "length": 40
+    },
+    "AisleWidth": 45
+  }
+  
