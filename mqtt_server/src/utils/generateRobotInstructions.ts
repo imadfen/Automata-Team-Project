@@ -1,5 +1,5 @@
 import config from "../robotConfig.json" assert { type: "json" };
-import { Direction, Instruction, Position } from "../types/RobotGeometry.ts";
+import { Direction, Instruction, Position } from "../types/RobotGeometry";
 
 const DIRECTION_VECTORS: Record<string, [number, number]> = {
   UP: [-1, 0],
@@ -36,7 +36,7 @@ function getDirectionIndex(direction: string): number {
 
 function rotationSteps(
   from: string,
-  to: string,
+  to: string
 ): { direction: "LEFT" | "RIGHT"; steps: number } {
   const fromIndex = getDirectionIndex(from);
   const toIndex = getDirectionIndex(to);
@@ -52,12 +52,12 @@ function rotationSteps(
 export default function generateInstructions(
   path: Direction[],
   shelfPosition: Position | null = null,
-  startDirection: Direction = "DOWN",
+  startDirection: Direction = "DOWN"
 ): Instruction[] {
   const instructions: Instruction[] = [];
   let currentDirection = startDirection;
   let currentPosition: Position = { x: 0, y: 0 };
-  
+
   // Handle the first direction change if needed
   if (path.length > 0 && path[0] !== startDirection) {
     const { direction, steps } = rotationSteps(startDirection, path[0]);
@@ -68,28 +68,32 @@ export default function generateInstructions(
     });
     currentDirection = path[0];
   }
-  
+
   // Process consecutive steps in the same direction
   let i = 0;
   while (i < path.length) {
     const currentDir = path[i];
     let consecutiveSteps = 1;
-    
+
     // Count consecutive steps in the same direction
-    while (i + consecutiveSteps < path.length && path[i + consecutiveSteps] === currentDir) {
+    while (
+      i + consecutiveSteps < path.length &&
+      path[i + consecutiveSteps] === currentDir
+    ) {
       consecutiveSteps++;
     }
-    
+
     // Add forward instruction for the consecutive steps
     const isDiagonal = currentDir.includes("_");
     instructions.push({
       action: "FORWARD",
-      time: config.ForwardTime * (isDiagonal ? Math.SQRT2 : 1) * consecutiveSteps,
+      time:
+        config.ForwardTime * (isDiagonal ? Math.SQRT2 : 1) * consecutiveSteps,
     });
-    
+
     // Move to the next different direction
     i += consecutiveSteps;
-    
+
     // If there's a next direction, add a turn instruction
     if (i < path.length) {
       const nextDir = path[i];
@@ -101,12 +105,12 @@ export default function generateInstructions(
       });
       currentDirection = nextDir;
     }
-    
+
     // Update current position
     const [dx, dy] = DIRECTION_VECTORS[currentDir];
-    currentPosition = { 
-      x: currentPosition.x + dx * consecutiveSteps, 
-      y: currentPosition.y + dy * consecutiveSteps 
+    currentPosition = {
+      x: currentPosition.x + dx * consecutiveSteps,
+      y: currentPosition.y + dy * consecutiveSteps,
     };
   }
 

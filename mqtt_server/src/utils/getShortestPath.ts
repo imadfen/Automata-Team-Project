@@ -1,4 +1,4 @@
-import { Direction, DirectionWithOfset, Point } from "../types/RobotGeometry.ts";
+import { Direction, DirectionWithOfset, Point } from "../types/RobotGeometry";
 
 const DIRECTIONS: DirectionWithOfset[] = [
   { name: "UP", offset: [-1, 0] },
@@ -21,7 +21,7 @@ function pointToString(p: Point): string {
 
 function reconstructPath(
   cameFrom: Map<string, { from: Point; direction: Direction }>,
-  current: Point,
+  current: Point
 ): Direction[] {
   const path: Direction[] = [];
   while (cameFrom.has(pointToString(current))) {
@@ -35,7 +35,7 @@ function reconstructPath(
 export default function getShortestPath(
   grid: string[][],
   start: Point,
-  target: Point,
+  target: Point
 ): Direction[] | null {
   const rows = grid.length;
   const cols = grid[0].length;
@@ -46,7 +46,8 @@ export default function getShortestPath(
   const gScore: Map<string, number> = new Map();
   gScore.set(pointToString(start), 0);
 
-  const cameFrom: Map<string, { from: Point; direction: Direction }> = new Map();
+  const cameFrom: Map<string, { from: Point; direction: Direction }> =
+    new Map();
 
   const visited: Set<string> = new Set();
 
@@ -77,7 +78,10 @@ export default function getShortestPath(
       ) {
         const tentativeG = (gScore.get(currentKey) ?? Infinity) + 1;
         if (tentativeG < (gScore.get(neighborKey) ?? Infinity)) {
-          cameFrom.set(neighborKey, { from: current, direction: name as Direction });
+          cameFrom.set(neighborKey, {
+            from: current,
+            direction: name as Direction,
+          });
           gScore.set(neighborKey, tentativeG);
           const fScore = tentativeG + heuristic(neighbor, target);
           openSet.push([fScore, tentativeG, neighbor]);
