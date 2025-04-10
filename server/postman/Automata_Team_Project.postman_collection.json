@@ -1,0 +1,513 @@
+{
+  "info": {
+    "name": "Automata Team Project",
+    "description": "API collection for Automata Team Project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Product management endpoints",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Product Name\",\n    \"type\": \"Type\",\n    \"height\": 10,\n    \"width\": 20,\n    \"weight\": 5,\n    \"sku\": \"SKU123\",\n    \"status\": \"in\",\n    \"location\": \"Warehouse A\",\n    \"qrCode\": \"QR123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products/create",
+              "host": ["{{base_url}}"],
+              "path": ["products", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/all",
+              "host": ["{{base_url}}"],
+              "path": ["products", "all"]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "product_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Product Name\",\n    \"type\": \"Updated Type\",\n    \"height\": 15,\n    \"width\": 25,\n    \"weight\": 7,\n    \"sku\": \"SKU123\",\n    \"status\": \"out\",\n    \"location\": \"Warehouse B\",\n    \"qrCode\": \"QR123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "product_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "product_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by SKU",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/sku/:sku",
+              "host": ["{{base_url}}"],
+              "path": ["products", "sku", ":sku"],
+              "variable": [
+                {
+                  "key": "sku",
+                  "value": "SKU123"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Product Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"out\",\n    \"location\": \"Warehouse C\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products/:id/status",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "product_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "description": "Device management endpoints",
+      "item": [
+        {
+          "name": "Create Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"deviceName\": \"ESP32-001\",\n    \"type\": \"esp32\",\n    \"batteryLevel\": 100,\n    \"status\": \"idle\",\n    \"location\": \"Warehouse A\",\n    \"rfidTag\": \"RFID123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices",
+              "host": ["{{base_url}}"],
+              "path": ["devices"]
+            }
+          }
+        },
+        {
+          "name": "Get All Devices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices",
+              "host": ["{{base_url}}"],
+              "path": ["devices"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Devices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/active",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "active"]
+            }
+          }
+        },
+        {
+          "name": "Get Device by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/:id",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "device_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Device by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/name/:name",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "name", ":name"],
+              "variable": [
+                {
+                  "key": "name",
+                  "value": "ESP32-001"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Devices by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/type/:type",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "type", ":type"],
+              "variable": [
+                {
+                  "key": "type",
+                  "value": "esp32"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Device",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"deviceName\": \"ESP32-001-Updated\",\n    \"batteryLevel\": 85,\n    \"status\": \"busy\",\n    \"location\": \"Warehouse B\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/:id",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "device_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Device Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"busy\",\n    \"batteryLevel\": 75,\n    \"location\": \"Warehouse C\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/:id/status",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "device_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Device RFID Tag",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rfidTag\": \"RFID456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/:id/rfid",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ":id", "rfid"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "device_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Device",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/:id",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "device_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "auth_token",
+      "value": "your_jwt_token_here"
+    }
+  ]
+}
