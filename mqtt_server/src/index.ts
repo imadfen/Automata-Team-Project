@@ -35,7 +35,6 @@ async function main() {
       shelf1,
       shelf2,
       shelf3,
-    
     })
 
 
