@@ -4,8 +4,8 @@
   "description": "MQTT-based device control server for warehouse management",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "test": "jest"
   },
@@ -21,10 +21,11 @@
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/mqtt": "^2.5.0",
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.17.30",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.3.3"
   }
 }
