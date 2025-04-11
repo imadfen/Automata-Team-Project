@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 import dotenv from "dotenv";
 import { logger } from "../utils/logger";
 import { deviceStatus } from "../types/device";
+import { RobotNavigationService } from "../services/robotNavigationService";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ interface ISocketService {
 export class SocketService implements ISocketService {
   private socket: Socket;
   private eventHandlers: Map<string, Function>;
-
+  private navigationService: RobotNavigationService | null = null;
   constructor() {
     this.eventHandlers = new Map();
     this.socket = io(process.env.SOCKET_SERVER_URL || "http://localhost:5000", {
@@ -26,7 +27,6 @@ export class SocketService implements ISocketService {
       reconnectionDelayMax: 5000,
       timeout: 20000,
     });
-
     this.setupSocketListeners();
   }
   private setupSocketListeners(): void {
@@ -57,10 +57,32 @@ export class SocketService implements ISocketService {
           handler(devices);
         }
       }
-    ); // Handle acknowledgment of MQTT server registration
+    );
+
+    // Handle acknowledgment of MQTT server registration
     this.socket.on("mqtt:registered", () => {
       logger.info("MQTT server registration acknowledged");
     });
+
+    // Handle robot navigation requests
+    this.socket.on(
+      "robot:navigate",
+      async (data: { robotId: string; slotId: string }, callback: Function) => {
+        try {
+          const result = await this.navigationService?.handleNavigationRequest(
+            data.robotId,
+            data.slotId
+          );
+          callback({
+            success: true,
+            path: result?.directions,
+            instructions: result?.instructions,
+          });
+        } catch (error: any) {
+          callback({ success: false, error: error.message });
+        }
+      }
+    );
   }
 
   public on(event: string, handler: Function): void {
@@ -78,6 +100,14 @@ export class SocketService implements ISocketService {
   public updateBatteryLevel(deviceId: string, batteryLevel: number): void {
     this.emit("device:battery", { deviceId, batteryLevel });
   }
+
+  public initializeNavigationService(
+    navigationService: RobotNavigationService
+  ): void {
+    this.navigationService = navigationService;
+    logger.info("Navigation service initialized");
+  }
+
   public isConnected(): boolean {
     return this.socket.connected;
   }

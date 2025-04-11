@@ -1,16 +1,16 @@
 import config from "../robotConfig.json" assert { type: "json" };
-import { Direction, Point } from "../types/RobotGeometry.ts";
-import { 
-  Shelf, 
-  StorageSlot, 
-  Package, 
-  WarehouseGrid, 
+import { Direction, Point } from "../types/RobotGeometry";
+import {
+  Shelf,
+  StorageSlot,
+  Package,
+  WarehouseGrid,
   ShelfPosition,
-  Position2D, 
-  ShelfSide
-} from "../types/Warehouse.ts";
-import getShortestPath from "../utils/getShortestPath.ts";
-import generateInstructions from "../utils/generateRobotInstructions.ts";
+  Position2D,
+  ShelfSide,
+} from "../types/Warehouse";
+import getShortestPath from "../utils/getShortestPath";
+import generateInstructions from "../utils/generateRobotInstructions";
 
 export class WarehouseService {
   private grid: WarehouseGrid;
@@ -29,12 +29,12 @@ export class WarehouseService {
     // Initialize with default size - can be adjusted based on actual warehouse dimensions
     const width = config.GridSize;
     const height = config.GridSize;
-    
+
     return {
       dimensions: { width, height },
-      cells: Array(height).fill(null).map(() => 
-        Array(width).fill("EMPTY")
-      )
+      cells: Array(height)
+        .fill(null)
+        .map(() => Array(width).fill("EMPTY")),
     };
   }
 
@@ -43,37 +43,41 @@ export class WarehouseService {
     const shelf: Shelf = {
       id: shelfId,
       position,
-      levels: 3,  // Default 3 levels as shown in the technical drawing
-      slotsPerLevel: Math.floor(30 / config.GridCellSize)  // Based on shelf length
+      levels: 3, // Default 3 levels as shown in the technical drawing
+      slotsPerLevel: Math.floor(30 / config.GridCellSize), // Based on shelf length
     };
 
     // Update grid with shelf and required aisle space
     this.updateGridWithShelf(shelf);
-    
+
     // Create storage slots for both sides of the shelf
     this.createStorageSlots(shelf);
-    
+
     this.shelves.set(shelfId, shelf);
     return shelfId;
   }
 
   private updateGridWithShelf(shelf: Shelf) {
     const { x, y, orientation } = shelf.position;
-    const shelfDepthCells = Math.ceil(config.ShelfDimensions.depth / config.GridCellSize);
-    const shelfWidthCells = Math.ceil(config.ShelfDimensions.width / config.GridCellSize);
-    
+    const shelfDepthCells = Math.ceil(
+      config.ShelfDimensions.depth / config.GridCellSize
+    );
+    const shelfWidthCells = Math.ceil(
+      config.ShelfDimensions.width / config.GridCellSize
+    );
+
     if (orientation === "HORIZONTAL") {
       // Mark shelf cells
       for (let i = 0; i < shelfWidthCells; i++) {
         this.grid.cells[y][x + i] = "SHELF";
       }
-      
+
       // Mark aisle cells
       const aisleWidth = Math.ceil(config.AisleWidth / config.GridCellSize);
       for (let i = 0; i < shelfWidthCells; i++) {
-        if (y > 0) this.grid.cells[y - 1][x + i] = "AISLE";  // Front aisle
+        if (y > 0) this.grid.cells[y - 1][x + i] = "AISLE"; // Front aisle
         if (y < this.grid.dimensions.height - 1) {
-          this.grid.cells[y + 1][x + i] = "AISLE";  // Back aisle
+          this.grid.cells[y + 1][x + i] = "AISLE"; // Back aisle
         }
       }
     } else {
@@ -81,12 +85,12 @@ export class WarehouseService {
       for (let i = 0; i < shelfDepthCells; i++) {
         this.grid.cells[y + i][x] = "SHELF";
       }
-      
+
       const aisleWidth = Math.ceil(config.AisleWidth / config.GridCellSize);
       for (let i = 0; i < shelfDepthCells; i++) {
-        if (x > 0) this.grid.cells[y + i][x - 1] = "AISLE";  // Left aisle
+        if (x > 0) this.grid.cells[y + i][x - 1] = "AISLE"; // Left aisle
         if (x < this.grid.dimensions.width - 1) {
-          this.grid.cells[y + i][x + 1] = "AISLE";  // Right aisle
+          this.grid.cells[y + i][x + 1] = "AISLE"; // Right aisle
         }
       }
     }
@@ -103,7 +107,7 @@ export class WarehouseService {
           level,
           position: pos,
           side: "FRONT",
-          isOccupied: false
+          isOccupied: false,
         });
 
         // Create back side slot
@@ -114,7 +118,7 @@ export class WarehouseService {
           level,
           position: pos,
           side: "BACK",
-          isOccupied: false
+          isOccupied: false,
         });
       }
     }
@@ -128,8 +132,11 @@ export class WarehouseService {
     if (!shelf) return null;
 
     // Convert shelf position to appropriate aisle position based on slot side
-    const targetPosition = this.getAislePositionForSlot(shelf.position, slot.side);
-    
+    const targetPosition = this.getAislePositionForSlot(
+      shelf.position,
+      slot.side
+    );
+
     // Get path from robot home (0,0) to target position
     return getShortestPath(
       this.convertGridToPathfinding(),
@@ -138,23 +145,26 @@ export class WarehouseService {
     );
   }
 
-  private getAislePositionForSlot(shelfPos: ShelfPosition, side: ShelfSide): Position2D {
+  private getAislePositionForSlot(
+    shelfPos: ShelfPosition,
+    side: ShelfSide
+  ): Position2D {
     if (shelfPos.orientation === "HORIZONTAL") {
       return {
         x: shelfPos.x,
-        y: shelfPos.y + (side === "FRONT" ? -1 : 1)
+        y: shelfPos.y + (side === "FRONT" ? -1 : 1),
       };
     } else {
       return {
         x: shelfPos.x + (side === "FRONT" ? -1 : 1),
-        y: shelfPos.y
+        y: shelfPos.y,
       };
     }
   }
 
   private convertGridToPathfinding(): string[][] {
-    return this.grid.cells.map(row =>
-      row.map(cell => {
+    return this.grid.cells.map((row) =>
+      row.map((cell) => {
         switch (cell) {
           case "EMPTY":
           case "AISLE":
@@ -175,18 +185,20 @@ export class WarehouseService {
       SHELF: "█",
       OBSTACLE: "X",
       AISLE: "·",
-      HOME: "H"  // Robot's home position
+      HOME: "H", // Robot's home position
     };
 
     // Create a copy of the grid for visualization
-    const visualGrid = this.grid.cells.map(row => [...row]);
-    
+    const visualGrid = this.grid.cells.map((row) => [...row]);
+
     // Mark home position
     visualGrid[0][0] = "HOME";
 
     // Convert to string representation
-    return visualGrid.map(row => 
-      row.map(cell => symbols[cell as keyof typeof symbols]).join(" ")
-    ).join("\n");
+    return visualGrid
+      .map((row) =>
+        row.map((cell) => symbols[cell as keyof typeof symbols]).join(" ")
+      )
+      .join("\n");
   }
-} 
+}

@@ -127,8 +127,13 @@ export class DeviceController {
       device.lastSeen = new Date();
       this.devices.set(deviceId, device);
 
-      // Emit battery update to main server
-      this.socketService.updateBatteryLevel(deviceId, batteryLevel);
+      logger.info(`socketMessage Sent to main server for device ${deviceId}`);
+
+      // Emit battery update to main server in the expected format
+      this.socketService.emit("device:battery", {
+        deviceId,
+        batteryLevel,
+      });
     } catch (error) {
       logger.error(
         `Error handling battery update for device ${deviceId}:`,
@@ -149,9 +154,9 @@ export class DeviceController {
       device.lastSeen = new Date();
       this.devices.set(deviceId, device);
 
-      // Emit status update to main server
-      this.socketService.updateDeviceStatus({
-        id: deviceId,
+      // Emit status update to main server in the expected format
+      this.socketService.emit("device:status", {
+        deviceId,
         status,
         batteryLevel: device.batteryLevel,
         lastSeen: device.lastSeen,

@@ -1,7 +1,11 @@
 import { Server, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
-import { updateDeviceStates } from "../services/deviceService.js";
+import {
+  updateDeviceBatteryLevel,
+  updateDeviceStatus,
+} from "../services/deviceService.ts";
 import { Device } from "../models/Device.js";
+import { deviceStatus } from "../types/device.ts";
 
 export class SocketService {
   private io: Server;
@@ -32,6 +36,15 @@ export class SocketService {
   public notifyDeviceListUpdate(devices: Array<{ id: string }>): void {
     if (this.mqttServer) {
       this.mqttServer.emit("devices:list", devices);
+    }
+  }
+
+  public emitToMqttServer(event: string, data: any, callback?: Function): void {
+    if (this.mqttServer) {
+      this.mqttServer.emit(event, data, callback);
+    } else {
+      console.error("MQTT Server is not connected");
+      callback?.({ success: false, error: "MQTT Server is not connected" });
     }
   }
 
@@ -69,7 +82,7 @@ export class SocketService {
         }) => {
           if (socket === this.mqttServer) {
             // Update device status to error
-            await updateDeviceStates(data.deviceId, "error");
+            await updateDeviceStatus(data.deviceId, "error");
             // Broadcast error to all clients
             this.io.emit("device:error:reported", data);
           }
@@ -82,7 +95,7 @@ export class SocketService {
         async (data: { deviceId: string; reason: string; timestamp: Date }) => {
           if (socket === this.mqttServer) {
             // Update device status to offline in database
-            await updateDeviceStates(data.deviceId, "offline");
+            await updateDeviceStatus(data.deviceId, "offline");
             // Broadcast disconnection to all clients
             this.io.emit("device:disconnected", data);
           }
@@ -95,6 +108,34 @@ export class SocketService {
           this.mqttServer = null;
         }
       });
+
+      // Handle device battery level updates from MQTT server
+      socket.on(
+        "device:battery",
+        async (data: { deviceId: string; batteryLevel: number }) => {
+          if (socket === this.mqttServer) {
+            console.log("Battery level update received:", data);
+            // Update device status to idle in database
+            await updateDeviceBatteryLevel(data.deviceId, data.batteryLevel);
+            // Broadcast battery level to all clients
+            this.io.emit("device:battery", data);
+          }
+        },
+      );
+
+      // Handle device status updates from MQTT server
+      socket.on(
+        "device:status",
+        async (data: { deviceId: string; status: deviceStatus }) => {
+          if (socket === this.mqttServer) {
+            // Update device status in database
+            console.log("Device status update received:", data);
+            await updateDeviceStatus(data.deviceId, data.status);
+            // Broadcast status to all clients
+            this.io.emit("device:status", data);
+          }
+        },
+      );
     });
   }
 

@@ -29,12 +29,17 @@ export class MQTTHandler {
   private setupEventHandlers(): void {
     this.client.on("connect", () => {
       logger.info("Connected to MQTT broker");
+      // Subscribe to wildcard topic to catch all device messages
+      this.subscribe("device/#");
+      logger.info("Subscribed to wildcard topic device/#");
       this.resubscribeToDeviceTopics();
     });
 
     this.client.on("message", async (topic: string, message: Buffer) => {
       const payload = message.toString();
-      logger.debug(`Received message on topic ${topic}: ${payload}`);
+      logger.info(
+        `Raw MQTT message received - Topic: ${topic}, Payload: ${payload}`
+      );
       const deviceId = this.extractDeviceId(topic);
 
       if (!deviceId) {
