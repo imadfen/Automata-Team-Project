@@ -35,8 +35,7 @@ async function main() {
       shelf1,
       shelf2,
       shelf3,
-    })
-
+    });
 
     // // Log warehouse layout for debugging
     // logger.info("\nWarehouse Layout:");
@@ -57,15 +56,6 @@ async function main() {
 
     // Initialize socket service with navigation service
     socketService.initializeNavigationService(navigationService);
-
-    // Check socket connection status periodically
-    setInterval(() => {
-      logger.info(
-        `Socket connection status: ${
-          controller.isConnected() ? "connected" : "disconnected"
-        }`
-      );
-    }, 30000); // Check every 30 seconds
 
     // Handle graceful shutdown
     process.on("SIGINT", async () => {

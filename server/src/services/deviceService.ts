@@ -34,26 +34,43 @@ export const deleteDevice = async (id: string) => {
   return await Device.findByIdAndDelete(id);
 };
 
-export const updateDeviceStates = async (
+export const updateDeviceBatteryLevel = async (
   id: string,
-  status?: "idle" | "busy" | "offline" | "error",
-  batteryLevel?: number,
-  location?: string,
+  batteryLevel: number,
 ) => {
-  const updateData: any = {
-    status,
-    lastSeen: new Date(),
-  };
+  return await Device.findByIdAndUpdate(
+    id,
+    {
+      batteryLevel,
+      lastSeen: new Date(),
+    },
+    { new: true },
+  );
+};
 
-  if (typeof batteryLevel !== "undefined") {
-    updateData.batteryLevel = batteryLevel;
-  }
+export const updateDeviceStatus = async (
+  id: string,
+  status: "idle" | "busy" | "offline" | "error",
+) => {
+  return await Device.findByIdAndUpdate(
+    id,
+    {
+      status,
+      lastSeen: new Date(),
+    },
+    { new: true },
+  );
+};
 
-  if (typeof location !== "undefined") {
-    updateData.location = location;
-  }
-
-  return await Device.findByIdAndUpdate(id, updateData, { new: true });
+export const updateDeviceLocation = async (id: string, location: string) => {
+  return await Device.findByIdAndUpdate(
+    id,
+    {
+      location,
+      lastSeen: new Date(),
+    },
+    { new: true },
+  );
 };
 
 export const getActiveDevices = async () => {
