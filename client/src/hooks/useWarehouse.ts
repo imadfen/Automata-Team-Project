@@ -1,12 +1,22 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Position, ShelfData, GridCell, WarehouseState, CellType } from '../types/warehouse';
+import { useRobotConfig } from './useRobotConfig';
 
-const INITIAL_GRID_SIZE = 30;
+// Default grid size if robot config is not available
+const DEFAULT_GRID_SIZE = 30;
 
 export function useWarehouse() {
+  const { config: robotConfig, loading: robotConfigLoading } = useRobotConfig();
+  
+  // Calculate grid size based on robot configuration
+  const gridSize = robotConfig ? Math.floor(robotConfig.gridSize / robotConfig.gridCellSize) : DEFAULT_GRID_SIZE;
+  
+  console.log('Robot Config:', robotConfig);
+  console.log('Calculated Grid Size:', gridSize);
+  
   const [state, setState] = useState<WarehouseState>({
-    grid: Array(INITIAL_GRID_SIZE).fill(null).map(() =>
-      Array(INITIAL_GRID_SIZE).fill({ type: 'EMPTY' as CellType })
+    grid: Array(gridSize).fill(null).map(() =>
+      Array(gridSize).fill({ type: 'EMPTY' as CellType })
     ),
     shelves: new Map(),
     robotPosition: { x: 0, y: 0 },
@@ -14,6 +24,49 @@ export function useWarehouse() {
     selectedShelf: null,
     isDragging: false,
   });
+
+  // Update grid size when robot configuration changes
+  useEffect(() => {
+    if (robotConfig && !robotConfigLoading) {
+      const newGridSize = Math.floor(robotConfig.gridSize / robotConfig.gridCellSize);
+      console.log('Updating grid size to:', newGridSize);
+      
+      // Only update if the grid size has changed
+      if (newGridSize !== state.grid.length) {
+        console.log('Grid size changed, creating new grid');
+        // Create a new grid with the updated size
+        const newGrid = Array(newGridSize).fill(null).map(() =>
+          Array(newGridSize).fill({ type: 'EMPTY' as CellType })
+        );
+        
+        // Copy existing grid data to the new grid
+        for (let y = 0; y < Math.min(state.grid.length, newGridSize); y++) {
+          for (let x = 0; x < Math.min(state.grid[0].length, newGridSize); x++) {
+            newGrid[y][x] = state.grid[y][x];
+          }
+        }
+        
+        // Ensure robot position is within the new grid bounds
+        const newRobotPosition = {
+          x: Math.min(state.robotPosition.x, newGridSize - 1),
+          y: Math.min(state.robotPosition.y, newGridSize - 1)
+        };
+        
+        // Set robot position in the new grid
+        newGrid[newRobotPosition.y][newRobotPosition.x] = { type: 'ROBOT' };
+        
+        setState(prev => ({
+          ...prev,
+          grid: newGrid,
+          robotPosition: newRobotPosition
+        }));
+      } else {
+        console.log('Grid size unchanged, no update needed');
+      }
+    } else {
+      console.log('Robot config not available or still loading');
+    }
+  }, [robotConfig, robotConfigLoading]);
 
   // Initialize the robot's home position
   useEffect(() => {
@@ -41,11 +94,12 @@ export function useWarehouse() {
     // Create a temporary grid to simulate the placement
     const tempGrid = grid.map(row => [...row]);
     const { x, y } = position;
+    const gridSize = grid.length;
     
     // Mark the new shelf cells in the temporary grid
     for (let i = 0; i < height; i++) {
       for (let j = 0; j < width; j++) {
-        if (y + i < INITIAL_GRID_SIZE && x + j < INITIAL_GRID_SIZE) {
+        if (y + i < gridSize && x + j < gridSize) {
           tempGrid[y + i][x + j] = { type: 'SHELF', shelfId: 'temp' };
         }
       }
@@ -69,7 +123,7 @@ export function useWarehouse() {
             hasAccessibleSide = true;
             break;
           }
-          if (sy < INITIAL_GRID_SIZE - 1 && tempGrid[sy + 1][sx + j].type !== 'SHELF') {
+          if (sy < gridSize - 1 && tempGrid[sy + 1][sx + j].type !== 'SHELF') {
             hasAccessibleSide = true;
             break;
           }
@@ -81,7 +135,7 @@ export function useWarehouse() {
             hasAccessibleSide = true;
             break;
           }
-          if (sx < INITIAL_GRID_SIZE - 1 && tempGrid[sy + i][sx + 1].type !== 'SHELF') {
+          if (sx < gridSize - 1 && tempGrid[sy + i][sx + 1].type !== 'SHELF') {
             hasAccessibleSide = true;
             break;
           }
@@ -130,7 +184,7 @@ export function useWarehouse() {
       // Update grid cells for shelf
       for (let i = 0; i < shelfData.height; i++) {
         for (let j = 0; j < shelfData.width; j++) {
-          if (y + i < INITIAL_GRID_SIZE && x + j < INITIAL_GRID_SIZE) {
+          if (y + i < gridSize && x + j < gridSize) {
             newGrid[y + i][x + j] = { type: 'SHELF', shelfId };
           }
         }
@@ -144,7 +198,7 @@ export function useWarehouse() {
             newGrid[y - 1][x + j] = { type: 'AISLE' };
           }
           // Check if there's space below and no shelf there
-          if (y < INITIAL_GRID_SIZE - 1 && newGrid[y + 1][x + j].type !== 'SHELF') {
+          if (y < gridSize - 1 && newGrid[y + 1][x + j].type !== 'SHELF') {
             newGrid[y + 1][x + j] = { type: 'AISLE' };
           }
         }
@@ -155,7 +209,7 @@ export function useWarehouse() {
             newGrid[y + i][x - 1] = { type: 'AISLE' };
           }
           // Check if there's space to the right and no shelf there
-          if (x < INITIAL_GRID_SIZE - 1 && newGrid[y + i][x + 1].type !== 'SHELF') {
+          if (x < gridSize - 1 && newGrid[y + i][x + 1].type !== 'SHELF') {
             newGrid[y + i][x + 1] = { type: 'AISLE' };
           }
         }
@@ -233,7 +287,7 @@ export function useWarehouse() {
       const { x, y } = newPosition;
       for (let i = 0; i < updatedShelf.height; i++) {
         for (let j = 0; j < updatedShelf.width; j++) {
-          if (y + i < INITIAL_GRID_SIZE && x + j < INITIAL_GRID_SIZE) {
+          if (y + i < gridSize && x + j < gridSize) {
             newGrid[y + i][x + j] = { type: 'SHELF', shelfId };
           }
         }
@@ -247,7 +301,7 @@ export function useWarehouse() {
             newGrid[y - 1][x + j] = { type: 'AISLE' };
           }
           // Check if there's space below and no shelf there
-          if (y < INITIAL_GRID_SIZE - 1 && newGrid[y + 1][x + j].type !== 'SHELF') {
+          if (y < gridSize - 1 && newGrid[y + 1][x + j].type !== 'SHELF') {
             newGrid[y + 1][x + j] = { type: 'AISLE' };
           }
         }
@@ -258,7 +312,7 @@ export function useWarehouse() {
             newGrid[y + i][x - 1] = { type: 'AISLE' };
           }
           // Check if there's space to the right and no shelf there
-          if (x < INITIAL_GRID_SIZE - 1 && newGrid[y + i][x + 1].type !== 'SHELF') {
+          if (x < gridSize - 1 && newGrid[y + i][x + 1].type !== 'SHELF') {
             newGrid[y + i][x + 1] = { type: 'AISLE' };
           }
         }

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
 import { GridCell, Position, GridConfig } from '../../types/warehouse';
 import { GridSquare } from './GridSquare';
+import { useRobotConfig } from '../../hooks/useRobotConfig';
 
 interface Props {
   grid: GridCell[][];
@@ -40,6 +41,8 @@ export const WarehouseGrid: React.FC<Props> = ({
   onCellDragOver,
   onCellDrop,
 }) => {
+  const { config: robotConfig, loading } = useRobotConfig();
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const target = e.target as HTMLElement;
@@ -56,12 +59,16 @@ export const WarehouseGrid: React.FC<Props> = ({
     onCellDrop?.({ x, y });
   }, [onCellDrop]);
 
-  // Calculate dynamic cell size based on container width
-  const cellSize = `minmax(0, 1fr)`;
+  // Calculate dynamic cell size based on robot configuration
+  const cellSize = robotConfig ? `${robotConfig.gridCellSize}px` : 'minmax(0, 1fr)';
+
+  if (loading) {
+    return <div>Loading robot configuration...</div>;
+  }
 
   return (
     <GridContainer
-      cellSize={config.cellSize}
+      cellSize={robotConfig?.gridCellSize || config.cellSize}
       style={{
         gridTemplateColumns: `repeat(${config.cols}, ${cellSize})`,
         gridTemplateRows: `repeat(${config.rows}, ${cellSize})`,
@@ -73,7 +80,7 @@ export const WarehouseGrid: React.FC<Props> = ({
             key={`${x}-${y}`}
             cell={cell}
             position={{ x, y }}
-            size={config.cellSize}
+            size={robotConfig?.gridCellSize || config.cellSize}
             grid={grid}
             onClick={() => onCellClick?.({ x, y })}
             onDragStart={() => onCellDragStart?.({ x, y })}

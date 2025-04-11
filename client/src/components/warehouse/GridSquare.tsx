@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { GridCell, Position, CellType } from '../../types/warehouse';
+import { useRobotConfig } from '../../hooks/useRobotConfig';
 
 interface SquareProps {
   cellType: CellType;
@@ -15,6 +16,8 @@ interface SquareProps {
   hasBorderRight?: boolean;
   hasBorderBottom?: boolean;
   hasBorderLeft?: boolean;
+  shelfWidth?: number;
+  shelfDepth?: number;
 }
 
 interface GridSquareProps {
@@ -47,6 +50,7 @@ const Square = styled.div<SquareProps>`
   border-bottom: ${props => props.hasBorderBottom ? '1px solid #000000' : 'none'};
   border-left: ${props => props.hasBorderLeft ? '1px solid #000000' : 'none'};
   margin: ${props => props.cellType === 'SHELF' ? '-1px' : '0'};
+  position: relative;
 
   &:hover {
     background-color: ${props => {
@@ -105,6 +109,15 @@ const HomeIcon = styled.div`
   }
 `;
 
+const ShelfDimensions = styled.div<{ width: number; depth: number }>`
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 8px;
+  color: #4b5563;
+  text-align: right;
+`;
+
 function getCellColor(type: string): string {
   switch (type) {
     case 'SHELF':
@@ -123,13 +136,14 @@ function getCellColor(type: string): string {
 export const GridSquare: React.FC<GridSquareProps> = ({
   cell,
   position,
-  size,
   grid,
   onClick,
   onDragStart,
   onDragOver,
   onDrop,
 }) => {
+  const { config: robotConfig } = useRobotConfig();
+
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', JSON.stringify(position));
     onDragStart?.(e);
@@ -150,6 +164,10 @@ export const GridSquare: React.FC<GridSquareProps> = ({
 
   // Check if this is the robot's home position (top left corner)
   const isRobotHome = position.x === 0 && position.y === 0 && cell.type === 'ROBOT';
+
+  // Get shelf dimensions from robot config
+  const shelfWidth = robotConfig?.shelfDimensions.width || 15;
+  const shelfDepth = robotConfig?.shelfDimensions.depth || 30;
 
   return (
     <Square
@@ -175,6 +193,11 @@ export const GridSquare: React.FC<GridSquareProps> = ({
     >
       {cell.type === 'ROBOT' && isRobotHome && <HomeIcon />}
       {cell.type === 'ROBOT' && !isRobotHome && <RobotIcon direction={90} />}
+      {cell.type === 'SHELF' && (
+        <ShelfDimensions width={shelfWidth} depth={shelfDepth}>
+          {shelfWidth}x{shelfDepth}
+        </ShelfDimensions>
+      )}
     </Square>
   );
 }; 

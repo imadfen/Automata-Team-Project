@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { WarehouseGrid } from './WarehouseGrid';
 import { useWarehouse } from '../../hooks/useWarehouse';
 import { Position } from '../../types/warehouse';
+import { useRobotConfig } from '../../hooks/useRobotConfig';
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -66,6 +67,15 @@ const Title = styled.h1`
   margin-right: auto;
 `;
 
+const LoadingIndicator = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.25rem;
+  color: #6b7280;
+`;
+
 export const WarehouseDashboard: React.FC = () => {
   const {
     state,
@@ -74,6 +84,8 @@ export const WarehouseDashboard: React.FC = () => {
     addObstacle,
     removeObstacle,
   } = useWarehouse();
+
+  const { config: robotConfig, loading: robotConfigLoading } = useRobotConfig();
 
   const [selectedTool, setSelectedTool] = useState<'SHELF' | 'OBSTACLE' | null>(null);
   const [shelfOrientation, setShelfOrientation] = useState<'HORIZONTAL' | 'VERTICAL'>('HORIZONTAL');
@@ -104,6 +116,14 @@ export const WarehouseDashboard: React.FC = () => {
       state.selectedShelf = null;
     }
   };
+
+  if (robotConfigLoading) {
+    return (
+      <DashboardContainer>
+        <LoadingIndicator>Loading robot configuration...</LoadingIndicator>
+      </DashboardContainer>
+    );
+  }
 
   return (
     <DashboardContainer>
@@ -139,7 +159,7 @@ export const WarehouseDashboard: React.FC = () => {
         <WarehouseGrid
           grid={state.grid}
           config={{
-            cellSize: 25,
+            cellSize: robotConfig?.gridCellSize || 25,
             rows: state.grid.length,
             cols: state.grid[0].length,
           }}

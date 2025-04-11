@@ -6,6 +6,7 @@ import helloRouter from "./routes/helloRoute.js";
 import authRouter from "./routes/auth.js";
 import productRouter from "./routes/product.js";
 import deviceRouter from "./routes/device.js";
+import robotConfigRouter from "./routes/robotConfigRoutes.js";
 import { SocketService } from "./services/socketService.js";
 
 export let io: SocketService;
@@ -26,6 +27,7 @@ connectDB()
     app.use("/auth", authRouter);
     app.use("/products", productRouter);
     app.use("/devices", deviceRouter);
+    app.use("/robot-config", robotConfigRouter);
 
     httpServer.listen(PORT, () => {
       console.log(` Server running at http://localhost:${PORT}`);
