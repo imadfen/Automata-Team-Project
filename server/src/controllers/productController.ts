@@ -91,9 +91,15 @@ export const updateProductStatusController = async (
   res: Response,
 ) => {
   try {
-    const { status, location } = req.body;
-    const product = await updateProductStatus(req.params.id, status, location);
+    const { status } = req.body;
+    // Calculate status based on quantity if not provided
+    const product = await getProductById(req.params.id);
     if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const updatedProduct = await updateProductStatus(req.params.id, status);
+    if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
     res.json(product);

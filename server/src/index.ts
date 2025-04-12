@@ -8,6 +8,7 @@ import productRouter from "./routes/product.js";
 import deviceRouter from "./routes/device.js";
 import robotConfigRouter from "./routes/robotConfigRoutes.js";
 import { SocketService } from "./services/socketService.js";
+import cors from "cors";
 
 export let io: SocketService;
 
@@ -20,6 +21,7 @@ connectDB()
     const PORT = process.env.PORT || 5000;
 
     // middleware
+    app.use(cors({ origin: "*" }));
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 

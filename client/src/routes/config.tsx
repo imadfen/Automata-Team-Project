@@ -6,6 +6,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import WarehouseDashboard from "../components/warehouse/WarehouseDashboard";
 import ErrorBoundary from "../components/ErrorBoundary";
+import InventoryPage from "../pages/dashboard/InventoryPage";
 import MainLayout from "../components/layouts/MainLayout";
 
 export const routes: RouteObject[] = [
@@ -43,6 +44,16 @@ export const routes: RouteObject[] = [
       <AuthGuard>
         <MainLayout>
           <WarehouseDashboard />
+        </MainLayout>
+      </AuthGuard>
+    ),
+  },
+  {
+    path: paths.dashboard.inventory,
+    element: (
+      <AuthGuard>
+        <MainLayout>
+          <InventoryPage />
         </MainLayout>
       </AuthGuard>
     ),
