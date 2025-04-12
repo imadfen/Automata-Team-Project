@@ -8,6 +8,7 @@ import WarehouseDashboard from "../components/warehouse/WarehouseDashboard";
 import ErrorBoundary from "../components/ErrorBoundary";
 import InventoryPage from "../pages/dashboard/InventoryPage";
 import DevicesPage from "../pages/dashboard/DevicesPage";
+import OverviewPage from "../pages/dashboard/OverviewPage";
 import MainLayout from "../components/layouts/MainLayout";
 
 export const routes: RouteObject[] = [
@@ -16,13 +17,7 @@ export const routes: RouteObject[] = [
     element: (
       <AuthGuard>
         <MainLayout>
-          <div className="size-full">
-            <h1 className="text-2xl font-bold">Welcome to automata</h1>
-            <p className="text-gray-600">
-              here you can see a globale statistics of your warehouse and manage
-              your devices.
-            </p>
-          </div>
+          <OverviewPage />
         </MainLayout>
       </AuthGuard>
     ),
@@ -70,13 +65,7 @@ export const routes: RouteObject[] = [
     element: (
       <AuthGuard>
         <MainLayout>
-          <div className="size-full">
-            <h1 className="text-2xl font-bold">Welcome to automata</h1>
-            <p className="text-gray-600">
-              here you can see a globale statistics of your warehouse and manage
-              your devices.
-            </p>
-          </div>
+          <OverviewPage />
         </MainLayout>
       </AuthGuard>
     ),

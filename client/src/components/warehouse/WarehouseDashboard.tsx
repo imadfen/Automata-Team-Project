@@ -233,12 +233,12 @@ const GridScaleKey: React.FC<{ cellSize: number; gridSize: number }> = ({ cellSi
 };
 
 const WarehouseDashboard: React.FC = () => {
-  const { 
-    state, 
-    addShelf, 
-    moveShelf, 
+  const {
+    state,
+    addShelf,
+    moveShelf,
     deleteShelf, 
-    addObstacle, 
+    addObstacle,
     removeObstacle,
     markAsClean,
     setCurrentLayout,
