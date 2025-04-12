@@ -161,11 +161,10 @@ export default function InventoryPage() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>{" "}
+      </div>
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
-            {" "}
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>SKU</TableHead>

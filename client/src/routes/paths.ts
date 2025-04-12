@@ -3,11 +3,13 @@ export const paths = {
   auth: {
     login: "/auth/login",
     register: "/auth/register",
-  }, // dashboard
+  },
+  // dashboard
   dashboard: {
     root: "/dashboard",
     warehouse: "/dashboard/warehouse",
     inventory: "/dashboard/inventory",
+    devices: "/dashboard/devices",
   },
   // catch all
   notFound: "*",
