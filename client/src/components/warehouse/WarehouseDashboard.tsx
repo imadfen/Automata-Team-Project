@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
-import { WarehouseGrid } from './WarehouseGrid';
-import { useWarehouse } from '../../hooks/useWarehouse';
-import { Position } from '../../types/warehouse';
-import { useRobotConfig } from '../../hooks/useRobotConfig';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
+import { WarehouseGrid } from "./WarehouseGrid";
+import { useWarehouse } from "../../hooks/useWarehouse";
+import { Position } from "../../types/warehouse";
+import { useRobotConfig } from "../../hooks/useRobotConfig";
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -37,10 +37,14 @@ const GridContainer = styled.div`
   min-height: 0;
 `;
 
-const Button = styled.button<{ isActive?: boolean; variant?: 'primary' | 'danger' }>`
-  background-color: ${props => {
-    if (props.variant === 'danger') return props.isActive ? '#dc2626' : '#ef4444';
-    return props.isActive ? '#1d4ed8' : '#3b82f6';
+const Button = styled.button<{
+  isActive?: boolean;
+  variant?: "primary" | "danger";
+}>`
+  background-color: ${(props) => {
+    if (props.variant === "danger")
+      return props.isActive ? "#dc2626" : "#ef4444";
+    return props.isActive ? "#1d4ed8" : "#3b82f6";
   }};
   color: white;
   padding: 0.5rem 1rem;
@@ -76,26 +80,25 @@ const LoadingIndicator = styled.div`
   color: #6b7280;
 `;
 
-export const WarehouseDashboard: React.FC = () => {
-  const {
-    state,
-    addShelf,
-    moveShelf,
-    addObstacle,
-    removeObstacle,
-  } = useWarehouse();
+const WarehouseDashboard: React.FC = () => {
+  const { state, addShelf, moveShelf, addObstacle, removeObstacle } =
+    useWarehouse();
 
   const { config: robotConfig, loading: robotConfigLoading } = useRobotConfig();
 
-  const [selectedTool, setSelectedTool] = useState<'SHELF' | 'OBSTACLE' | null>(null);
-  const [shelfOrientation, setShelfOrientation] = useState<'HORIZONTAL' | 'VERTICAL'>('HORIZONTAL');
+  const [selectedTool, setSelectedTool] = useState<"SHELF" | "OBSTACLE" | null>(
+    null
+  );
+  const [shelfOrientation, setShelfOrientation] = useState<
+    "HORIZONTAL" | "VERTICAL"
+  >("HORIZONTAL");
 
   const handleCellClick = (position: Position) => {
-    if (selectedTool === 'SHELF') {
+    if (selectedTool === "SHELF") {
       addShelf(position, shelfOrientation);
-    } else if (selectedTool === 'OBSTACLE') {
+    } else if (selectedTool === "OBSTACLE") {
       const cell = state.grid[position.y][position.x];
-      if (cell.type === 'OBSTACLE') {
+      if (cell.type === "OBSTACLE") {
         removeObstacle(position);
       } else {
         addObstacle(position);
@@ -130,28 +133,36 @@ export const WarehouseDashboard: React.FC = () => {
       <Toolbar>
         <Title>Warehouse Layout Editor</Title>
         <Button
-          isActive={selectedTool === 'SHELF'}
-          onClick={() => setSelectedTool(tool => tool === 'SHELF' ? null : 'SHELF')}
+          isActive={selectedTool === "SHELF"}
+          onClick={() =>
+            setSelectedTool((tool) => (tool === "SHELF" ? null : "SHELF"))
+          }
         >
-          {selectedTool === 'SHELF' ? 'Cancel Shelf' : 'Add Shelf'}
+          {selectedTool === "SHELF" ? "Cancel Shelf" : "Add Shelf"}
         </Button>
 
-        {selectedTool === 'SHELF' && (
+        {selectedTool === "SHELF" && (
           <Button
-            onClick={() => setShelfOrientation(
-              orient => orient === 'HORIZONTAL' ? 'VERTICAL' : 'HORIZONTAL'
-            )}
+            onClick={() =>
+              setShelfOrientation((orient) =>
+                orient === "HORIZONTAL" ? "VERTICAL" : "HORIZONTAL"
+              )
+            }
           >
-            {shelfOrientation === 'HORIZONTAL' ? 'Switch to Vertical' : 'Switch to Horizontal'}
+            {shelfOrientation === "HORIZONTAL"
+              ? "Switch to Vertical"
+              : "Switch to Horizontal"}
           </Button>
         )}
 
         <Button
           variant="danger"
-          isActive={selectedTool === 'OBSTACLE'}
-          onClick={() => setSelectedTool(tool => tool === 'OBSTACLE' ? null : 'OBSTACLE')}
+          isActive={selectedTool === "OBSTACLE"}
+          onClick={() =>
+            setSelectedTool((tool) => (tool === "OBSTACLE" ? null : "OBSTACLE"))
+          }
         >
-          {selectedTool === 'OBSTACLE' ? 'Cancel Obstacle' : 'Add Obstacle'}
+          {selectedTool === "OBSTACLE" ? "Cancel Obstacle" : "Add Obstacle"}
         </Button>
       </Toolbar>
 
@@ -170,4 +181,6 @@ export const WarehouseDashboard: React.FC = () => {
       </GridContainer>
     </DashboardContainer>
   );
-}; 
+};
+
+export default WarehouseDashboard;
