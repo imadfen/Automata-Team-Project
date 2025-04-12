@@ -11,20 +11,23 @@ interface Props {
   onCellDragStart?: (position: Position) => void;
   onCellDragOver?: (position: Position) => void;
   onCellDrop?: (position: Position) => void;
+  onCellContextMenu?: (e: React.MouseEvent, position: Position) => void;
+  onDeleteShelf?: (shelfId: string) => void;
 }
 
 const GridContainer = styled.div<{ cellSize: number }>`
   display: grid;
   gap: 0;
   background-color: #e5e7eb;
-  padding: 0;
+  padding: 2px;
   border: 1px solid #94a3b8;
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   width: 100%;
   aspect-ratio: 1;
   margin: 0 auto;
-  overflow: auto;
+  overflow: visible;
+  max-width: 1200px;
 
   & > * {
     width: 100%;
@@ -40,6 +43,8 @@ export const WarehouseGrid: React.FC<Props> = ({
   onCellDragStart,
   onCellDragOver,
   onCellDrop,
+  onCellContextMenu,
+  onDeleteShelf,
 }) => {
   const { config: robotConfig, loading } = useRobotConfig();
 
@@ -58,9 +63,14 @@ export const WarehouseGrid: React.FC<Props> = ({
     const y = parseInt(target.getAttribute('data-y') || '0');
     onCellDrop?.({ x, y });
   }, [onCellDrop]);
+  
+  const handleContextMenu = useCallback((e: React.MouseEvent, position: Position) => {
+    e.preventDefault(); // Prevent the browser's context menu
+    onCellContextMenu?.(e, position);
+  }, [onCellContextMenu]);
 
   // Calculate dynamic cell size based on robot configuration
-  const cellSize = robotConfig ? `${robotConfig.gridCellSize}px` : 'minmax(0, 1fr)';
+  const cellSize = 'minmax(0, 1fr)';
 
   if (loading) {
     return <div>Loading robot configuration...</div>;
@@ -86,6 +96,8 @@ export const WarehouseGrid: React.FC<Props> = ({
             onDragStart={() => onCellDragStart?.({ x, y })}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
+            onContextMenu={(e) => handleContextMenu(e, { x, y })}
+            onDeleteClick={onDeleteShelf}
           />
         ))
       )}

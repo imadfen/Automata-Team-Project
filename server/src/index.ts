@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.js";
 import productRouter from "./routes/product.js";
 import deviceRouter from "./routes/device.js";
 import robotConfigRouter from "./routes/robotConfigRoutes.js";
+import warehouseLayoutRouter from "./routes/warehouseLayoutRoutes.js";
 import { SocketService } from "./services/socketService.js";
 import cors from "cors";
 
@@ -30,6 +31,7 @@ connectDB()
     app.use("/products", productRouter);
     app.use("/devices", deviceRouter);
     app.use("/robot-config", robotConfigRouter);
+    app.use("/warehouse-layouts", warehouseLayoutRouter);
 
     httpServer.listen(PORT, () => {
       console.log(` Server running at http://localhost:${PORT}`);

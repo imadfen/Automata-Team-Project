@@ -16,6 +16,9 @@ export interface ShelfData {
 export interface GridCell {
   type: CellType;
   shelfId?: string;
+  isSelected?: boolean;
+  isHighlighted?: boolean;
+  isPath?: boolean;
 }
 
 export interface WarehouseState {
@@ -25,6 +28,11 @@ export interface WarehouseState {
   robotDirection: number; // 0-359 degrees
   selectedShelf: string | null;
   isDragging: boolean;
+  
+  // Layout tracking
+  isDirty: boolean;
+  currentLayoutId: string | null;
+  currentLayoutName: string;
 }
 
 export interface GridConfig {
