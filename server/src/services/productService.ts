@@ -32,7 +32,7 @@ export const getProductBySku = async (sku: string) => {
 
 export const updateProductStatus = async (
   id: string,
-  status: "in" | "out",
+  status: "In Stock" | "Low Stock" | "Out of Stock",
   location: string | null = null,
 ) => {
   return await Product.findByIdAndUpdate(
